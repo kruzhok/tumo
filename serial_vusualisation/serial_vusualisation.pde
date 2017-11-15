@@ -1,7 +1,7 @@
 import processing.serial.*;
 Serial port;
 float nextValue = 0, minimum = 1023, maximum = 0;
-int sizeRect = 500, cnt = 0;
+int sizeRect = 1000, cnt = 0;
 
 String s, min, max;
 
@@ -9,7 +9,7 @@ FloatList oscill;
 
 void setup()
 {
-size(1000, 500);
+size(1000, 1000);
 port = new Serial(this, "/dev/cu.wchusbserial1420", 115200);
 port.bufferUntil('\n');
 oscill = new FloatList();
