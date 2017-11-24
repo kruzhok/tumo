@@ -17,34 +17,35 @@ String cx = "011138245924366795803:ttyav6fhny0";
 String url = "https://www.googleapis.com/customsearch/v1?searchType=image&key=" + token + "&cx=" + cx + "&q=";
 String query;
 
+PImage defaultImage;
 PImage church;
 PImage musea;
 PImage map;
 PImage water;
 
-PFont font;
-
-Gif earth;
+Gif myAnimation;
 
 void setup() { 
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
                 
   myBus = new MidiBus(this, "Playtron", "Playtron"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
   imageMode(CENTER);
-  size(700, 500); 
+  size(800, 800); 
   background(50); 
   fill(200);
   
-  font = createFont("Arial Black", 48);
-  textFont(font);
-  textMode(CENTER);
-  textAlign(CENTER);
-  
   socket = new WebsocketServer(this, 1337, "/p5websocket");
   json = loadJSONObject("data.json");
+
+  myAnimation = new Gif(this, "giphy.gif");
+  myAnimation.play();
+  imageMode(CENTER);
   
-  //earth = Gif.getPImages(this, "giphy.gif");
-  earth = new Gif(this, "giphy.gif");
+  defaultImage = loadImage("default.png");
+  church = defaultImage;
+  musea = defaultImage;
+  map = defaultImage;
+  water = defaultImage;
 } 
 
 void draw() {
@@ -55,22 +56,22 @@ void draw() {
       try {
         church = loadImage(getImageSrc(query + "+church"));
       } catch (Exception e) {
-        church = loadImage("https://www.property118.com/wp-content/uploads/2016/08/vmRSZbWkIT.png");
+        church = defaultImage;
       }
       try {
         water = loadImage(getImageSrc(query + "+water"));
       } catch (Exception e) {
-        water = loadImage("https://www.property118.com/wp-content/uploads/2016/08/vmRSZbWkIT.png");
+        water = defaultImage;
       }
-      try {
+      try{
         musea = loadImage(getImageSrc(query + "+musea"));
       } catch (Exception e) {
-        musea = loadImage("https://www.property118.com/wp-content/uploads/2016/08/vmRSZbWkIT.png");
+        musea = defaultImage;
       }
       try {
         map = loadImage(getImageSrc(query + "+map"));
-      } catch (Exception e) {
-        map = loadImage("https://www.property118.com/wp-content/uploads/2016/08/vmRSZbWkIT.png");
+      }catch (Exception e) {
+        map = defaultImage;
       }
       
       previousMessage = message;
@@ -79,36 +80,42 @@ void draw() {
   } catch (Exception e) {
      println("Ошибка");
   }
+  
+  
 
-  if (bob==(37)){
-    image(musea, width/2, height/2, 600, 600);
-  //background(0, 255, 0);
-  
-  
-  }
-  else if(bob == 0){
-    background(0, 0, 0);
-    earth.play();
-    image(earth, width / 2, height / 2);
-  }
-  else if(bob ==47) {
-    image(map, width / 2, height / 2, 600, 600);
-    //background(255, 0, 0);
-  }
-  else if(bob == 51){
-    image(water, width/2, height/2, 600, 600);
-    //background(0, 150, 23);
-  }
-   if (bob==(37)){
-    image(musea, width/2, height/2, 600, 600);
-  //background(0, 255, 0);
-  
-  
-  }
-  else if(bob == 43){
-    image(church, width/2, height/2, 600, 600);
-    //background(255, 255, 0);
-  }
+    if (bob==(37)){
+      try {
+        image(musea, width/2, height/2, 600, 600);
+      } catch (Exception e) {
+        image(defaultImage, width/2, height/2, 600, 600);
+      }
+    }
+    else if(bob == 0){
+      background(0, 0, 0);
+      myAnimation.play();
+      image(myAnimation, width/2, height/2);
+    }
+    else if(bob ==47) {
+      try {
+        image(map, width/2, height/2, 600, 600);
+      } catch (Exception e) {
+        image(defaultImage, width/2, height/2, 600, 600);
+      }
+    }
+    else if(bob == 51){
+      try {
+        image(water, width/2, height/2, 600, 600);
+      } catch (Exception e) {
+        image(defaultImage, width/2, height/2, 600, 600);
+      }
+    }
+    else if(bob == 43){
+      try {
+        image(church, width/2, height/2, 600, 600);
+      } catch (Exception e) {
+        image(defaultImage, width/2, height/2, 600, 600);
+      }
+    }
   
 }
 
@@ -135,19 +142,16 @@ String getImageSrc(String query) {
   println("Адрес картинки: " + imageURL);
   return imageURL;
 }
-
 void noteOff(int channel, int pitch, int velocity) {
   // Receive a noteOff
   bob=0;
  
-  println("Off");
-  println("Pitch: " + pitch);
+  println("Pitch:" + pitch);
 }
 
 void noteOn(int channel, int pitch, int velocity) {
   // Receive a noteOn
   bob = pitch;
 
-  println("On");
-  println("Pitch: " + pitch);
+  println("Pitch:" + pitch);
 }
